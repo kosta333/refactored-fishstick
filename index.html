@@ -1,0 +1,161 @@
+<script type="text/javascript">
+        var gk_isXlsx = false;
+        var gk_xlsxFileLookup = {};
+        var gk_fileData = {};
+        function filledCell(cell) {
+          return cell !== '' && cell != null;
+        }
+        function loadFileData(filename) {
+        if (gk_isXlsx && gk_xlsxFileLookup[filename]) {
+            try {
+                var workbook = XLSX.read(gk_fileData[filename], { type: 'base64' });
+                var firstSheetName = workbook.SheetNames[0];
+                var worksheet = workbook.Sheets[firstSheetName];
+
+                // Convert sheet to JSON to filter blank rows
+                var jsonData = XLSX.utils.sheet_to_json(worksheet, { header: 1, blankrows: false, defval: '' });
+                // Filter out blank rows (rows where all cells are empty, null, or undefined)
+                var filteredData = jsonData.filter(row => row.some(filledCell));
+
+                // Heuristic to find the header row by ignoring rows with fewer filled cells than the next row
+                var headerRowIndex = filteredData.findIndex((row, index) =>
+                  row.filter(filledCell).length >= filteredData[index + 1]?.filter(filledCell).length
+                );
+                // Fallback
+                if (headerRowIndex === -1 || headerRowIndex > 25) {
+                  headerRowIndex = 0;
+                }
+
+                // Convert filtered JSON back to CSV
+                var csv = XLSX.utils.aoa_to_sheet(filteredData.slice(headerRowIndex)); // Create a new sheet from filtered array of arrays
+                csv = XLSX.utils.sheet_to_csv(csv, { header: 1 });
+                return csv;
+            } catch (e) {
+                console.error(e);
+                return "";
+            }
+        }
+        return gk_fileData[filename] || "";
+        }
+        </script><!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>If You Tell - A True Crime Story</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        body {
+            background-color: #f3f4f6;
+            font-family: 'Arial', sans-serif;
+        }
+        .hero-bg {
+            background-image: linear-gradient(rgba(0, 0, 0, 0.7), rgba(0, 0, 0, 0.7)), url('https://images.unsplash.com/photo-1456513080510-7bf3a84b82f8');
+            background-size: cover;
+            background-position: center;
+        }
+    </style>
+</head>
+<body class="text-gray-800">
+    <!-- Navigation -->
+    <nav class="bg-gray-900 text-white p-4 sticky top-0 shadow-md">
+        <div class="container mx-auto flex justify-between items-center">
+            <h1 class="text-xl font-bold">If You Tell</h1>
+            <ul class="flex space-x-6">
+                <li><a href="#home" class="hover:text-gray-300">Home</a></li>
+                <li><a href="#about" class="hover:text-gray-300">About the Author</a></li>
+                <li><a href="#contact" class="hover:text-gray-300">Contact</a></li>
+            </ul>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <section id="home" class="hero-bg text-white py-20">
+        <div class="container mx-auto text-center">
+            <h2 class="text-4xl font-bold mb-4">If You Tell</h2>
+            <p class="text-lg mb-6 max-w-2xl mx-auto">
+                A chilling true crime story of survival, resilience, and the unbreakable bond of sisterhood in the face of unimaginable horror.
+            </p>
+            <a href="#about" class="bg-red-600 text-white px-6 py-2 rounded hover:bg-red-700">Learn More</a>
+        </div>
+    </section>
+
+    <!-- About the Book Section -->
+    <section class="py-16">
+        <div class="container mx-auto px-4">
+            <h3 class="text-3xl font-bold text-center mb-8">About the Book</h3>
+            <div class="flex flex-col md:flex-row items-center">
+                <div class="md:w-1/2 mb-6 md:mb-0">
+                    <img src="https://images.unsplash.com/photo-1512820790803-83ca3f5b725f" alt="Book cover placeholder" class="rounded shadow-md w-full">
+                </div>
+                <div class="md:w-1/2 md:pl-8">
+                    <p class="text-lg mb-4">
+                        "If You Tell" by Gregg Olsen recounts the harrowing true story of three sisters—Nikki, Sami, and Tori—who endured unimaginable abuse at the hands of their mother, Michelle "Shelly" Knotek. This gripping narrative unveils the dark secrets of a seemingly normal family and the sisters' courage to survive and seek justice.
+                    </p>
+                    <p class="text-lg">
+                        A New York Times bestseller, this book is a testament to the strength of the human spirit and the power of truth.
+                    </p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- About the Author Section -->
+    <section id="about" class="bg-gray-100 py-16">
+        <div class="container mx-auto px-4 text-center">
+            <h3 class="text-3xl font-bold mb-8">About Gregg Olsen</h3>
+            <p class="text-lg max-w-3xl mx-auto mb-4">
+                Gregg Olsen is a #1 New York Times bestselling author known for his compelling true crime and thriller novels. With a career spanning decades, Olsen has written numerous books that delve into the complexities of human nature and justice. His meticulous research and gripping storytelling have earned him a dedicated readership worldwide.
+            </p>
+            <a href="https://www.greggolsen.com/" target="_blank" class="text-red-600 hover:underline">Visit Gregg Olsen's Website</a>
+        </div>
+    </section>
+
+    <!-- Contact Section -->
+    <section id="contact" class="py-16">
+        <div class="container mx-auto px-4">
+            <h3 class="text-3xl font-bold text-center mb-8">Get in Touch</h3>
+            <div class="max-w-lg mx-auto">
+                <div class="bg-white p-6 rounded shadow-md">
+                    <div class="mb-4">
+                        <label for="name" class="block text-sm font-medium text-gray-700">Name</label>
+                        <input type="text" id="name" class="mt-1 p-2 w-full border rounded focus:outline-none focus:ring-2 focus:ring-red-600">
+                    </div>
+                    <div class="mb-4">
+                        <label for="email" class="block text-sm font-medium text-gray-700">Email</label>
+                        <input type="email" id="email" class="mt-1 p-2 w-full border rounded focus:outline-none focus:ring-2 focus:ring-red-600">
+                    </div>
+                    <div class="mb-4">
+                        <label for="message" class="block text-sm font-medium text-gray-700">Message</label>
+                        <textarea id="message" rows="4" class="mt-1 p-2 w-full border rounded focus:outline-none focus:ring-2 focus:ring-red-600"></textarea>
+                    </div>
+                    <button onclick="submitForm()" class="bg-red-600 text-white px-6 py-2 rounded hover:bg-red-700 w-full">Send Message</button>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="bg-gray-900 text-white py-6">
+        <div class="container mx-auto text-center">
+            <p>&copy; 2025 If You Tell Website. All rights reserved.</p>
+        </div>
+    </footer>
+
+    <script>
+        function submitForm() {
+            const name = document.getElementById('name').value;
+            const email = document.getElementById('email').value;
+            const message = document.getElementById('message').value;
+            if (name && email && message) {
+                alert('Thank you for your message! We will get back to you soon.');
+                document.getElementById('name').value = '';
+                document.getElementById('email').value = '';
+                document.getElementById('message').value = '';
+            } else {
+                alert('Please fill out all fields.');
+            }
+        }
+    </script>
+</body>
+</html>
